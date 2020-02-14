@@ -18,7 +18,7 @@ else:
     from cv2 import CV_LOAD_IMAGE_GRAYSCALE as IMREAD_GRAYSCALE
     from cv2 import CV_LOAD_IMAGE_UNCHANGED as IMREAD_UNCHANGED
 
-turbo_pixel_format = {'color': TJPF_BGR, 'grayscale': TJPF_GRAY, 'unchanged': TJPF_BGRA}
+turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY, 'unchanged': TJPF_BGRA}
 
 
 def imread(img_or_path, flag='color'):
