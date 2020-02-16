@@ -51,7 +51,7 @@ def imread(img_or_path, flag='color'):
         return img_or_path
     elif is_str(img_or_path):
         if imread_backend == 'turbojpeg':
-            from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
+            from turbojpeg import TJCS_RGB, TJPF_GRAY, TurboJPEG
             jpeg = TurboJPEG()
             turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY}
 
@@ -85,7 +85,7 @@ def imfrombytes(content, flag='color'):
         ndarray: Loaded image array.
     """
     if imread_backend == 'turbojpeg':
-        from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
+        from turbojpeg import TJCS_RGB, TJPF_GRAY, TurboJPEG
         jpeg = TurboJPEG()
         turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY}
 
