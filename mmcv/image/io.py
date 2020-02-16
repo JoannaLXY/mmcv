@@ -7,10 +7,6 @@ import numpy as np
 from mmcv.opencv_info import USE_OPENCV2
 from mmcv.utils import check_file_exist, is_str, mkdir_or_exist
 
-from turbojpeg import TJCS_RGB, TJCS_GRAY, TJPF_BGR, TJPF_GRAY, TJPF_BGRA, TurboJPEG
-
-jpeg = TurboJPEG()
-
 if not USE_OPENCV2:
     from cv2 import IMREAD_COLOR, IMREAD_GRAYSCALE, IMREAD_UNCHANGED
 else:
@@ -18,7 +14,23 @@ else:
     from cv2 import CV_LOAD_IMAGE_GRAYSCALE as IMREAD_GRAYSCALE
     from cv2 import CV_LOAD_IMAGE_UNCHANGED as IMREAD_UNCHANGED
 
-turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY, 'unchanged': TJPF_BGRA}
+imread_flags = {
+    'color': IMREAD_COLOR,
+    'grayscale': IMREAD_GRAYSCALE,
+    'unchanged': IMREAD_UNCHANGED
+}
+
+imread_backend = 'cv2'
+
+def usebackend(backend):
+    """Select a backend for imread
+
+    Args:
+        backend (str): The image decoding backend type. Options are "cv2" and
+            "turbojpeg".
+    """
+    global imread_backend
+    imread_backend = backend
 
 
 def imread(img_or_path, flag='color'):
@@ -37,13 +49,24 @@ def imread(img_or_path, flag='color'):
     if isinstance(img_or_path, np.ndarray):
         return img_or_path
     elif is_str(img_or_path):
-        pixel_format = turbo_pixel_format[flag] if is_str(flag) else flag
-        check_file_exist(img_or_path, 'img file does not exist: {}'.format(img_or_path))
+        if imread_backend == 'turbojpeg'
+            from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
+            jpeg = TurboJPEG()
+            turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY}
 
-        #change to turbojpeg
-        with open(img_or_path, 'rb') as in_file:
-            img = jpeg.decode(in_file.read(), pixel_format)
-        return img
+            if flag == 'color' or flag == 'grayscale'
+                pixel_format = turbo_pixel_format[flag]
+                check_file_exist(img_or_path, 'img file does not exist: {}'.format(img_or_path))
+                with open(img_or_path, 'rb') as in_file:
+                    img = jpeg.decode(in_file.read(), pixel_format)
+                return img
+            else
+                raise ValueError("flag must be 'color' or 'grayscale'")
+        else
+            flag = imread_flags[flag] if is_str(flag) else flag
+            check_file_exist(img_or_path,
+                         'img file does not exist: {}'.format(img_or_path))
+            return cv2.imread(img_or_path, flag)
     else:
         raise TypeError('"img" must be a numpy array or a filename')
 
@@ -58,10 +81,22 @@ def imfrombytes(content, flag='color'):
     Returns:
         ndarray: Loaded image array.
     """
-    # change to TurboJPEG
-    pixel_format = turbo_pixel_format[flag] if is_str(flag) else flag
-    img = jpeg.decode(content, pixel_format)
-    return img
+    if imread_backend == 'turbojpeg':
+        from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
+        jpeg = TurboJPEG()
+        turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY}
+
+        if flag == 'color' or flag == 'grayscale':
+            pixel_format = turbo_pixel_format[flag]
+            img = jpeg.decode(content, pixel_format)
+            return img
+        else:
+            raise ValueError('flag must be "color" or "grayscale".')
+    else:
+        img_np = np.frombuffer(content, np.uint8)
+        flag = imread_flags[flag] if is_str(flag) else flag
+        img = cv2.imdecode(img_np, flag)
+        return img
 
 
 def imwrite(img, file_path, params=None, auto_mkdir=True):

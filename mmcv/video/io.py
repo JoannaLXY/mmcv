@@ -19,10 +19,6 @@ else:
     from cv2.cv import CV_CAP_PROP_POS_FRAMES as CAP_PROP_POS_FRAMES
     from cv2.cv import CV_FOURCC as VideoWriter_fourcc
 
-from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
-
-jpeg = TurboJPEG()
-
 
 class Cache(object):
     def __init__(self, capacity):
@@ -299,18 +295,14 @@ def frames2video(frame_dir,
         end = len([name for name in scandir(frame_dir, ext)])
     first_file = osp.join(frame_dir, filename_tmpl.format(start))
     check_file_exist(first_file, 'The start frame not found: ' + first_file)
-    # change to TurboJPEG
-    with open(first_file, 'rb') as in_file:
-        img = jpeg.decode(in_file.read())
+    img = cv2.imread(filename)
     height, width = img.shape[:2]
     resolution = (width, height)
     vwriter = cv2.VideoWriter(video_file, VideoWriter_fourcc(*fourcc), fps, resolution)
 
     def write_frame(file_idx):
         filename = osp.join(frame_dir, filename_tmpl.format(file_idx))
-        # change to TurboJPEG
-        with open(filename, 'rb') as in_file:
-            img = jpeg.decode(in_file.read())
+        img = cv2.imread(filename)
         vwriter.write(img)
 
     if show_progress:
@@ -318,8 +310,6 @@ def frames2video(frame_dir,
     else:
         for i in range(start, end):
             filename = osp.join(frame_dir, filename_tmpl.format(i))
-            # change to TurboJPEG
-            with open(filename, 'rb') as in_file:
-                img = jpeg.decode(in_file.read())
+            img = cv2.imread(filename)
             vwriter.write(img)
     vwriter.release()
