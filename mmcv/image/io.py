@@ -24,7 +24,7 @@ imread_backend = 'cv2'
 
 
 def usebackend(backend):
-    """Select a backend for imread
+    """Select a backend for imread/imfrombyte
 
     Args:
         backend (str): The image decoding backend type. Options are "cv2" and
