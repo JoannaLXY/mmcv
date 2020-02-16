@@ -5,10 +5,12 @@ from collections import OrderedDict
 import cv2
 
 from mmcv.opencv_info import USE_OPENCV2
-from mmcv.utils import (check_file_exist, mkdir_or_exist, scandir, track_progress)
+from mmcv.utils import (check_file_exist, mkdir_or_exist, scandir,
+                        track_progress)
 
 if not USE_OPENCV2:
-    from cv2 import (CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FPS, CAP_PROP_FRAME_COUNT, CAP_PROP_FOURCC,
+    from cv2 import (CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FPS,
+                     CAP_PROP_FRAME_COUNT, CAP_PROP_FOURCC,
                      CAP_PROP_POS_FRAMES, VideoWriter_fourcc)
 else:
     from cv2.cv import CV_CAP_PROP_FRAME_WIDTH as CAP_PROP_FRAME_WIDTH
@@ -172,7 +174,9 @@ class VideoReader(object):
             ndarray or None: Return the frame if successful, otherwise None.
         """
         if frame_id < 0 or frame_id >= self._frame_cnt:
-            raise IndexError('"frame_id" must be between 0 and {}'.format(self._frame_cnt - 1))
+            raise IndexError(
+                '"frame_id" must be between 0 and {}'.format(self._frame_cnt -
+                                                             1))
         if frame_id == self._position:
             return self.read()
         if self._cache:
@@ -199,7 +203,13 @@ class VideoReader(object):
             return None
         return self._cache.get(self._position - 1)
 
-    def cvt2frames(self, frame_dir, file_start=0, filename_tmpl='{:06d}.jpg', start=0, max_num=0, show_progress=True):
+    def cvt2frames(self,
+                   frame_dir,
+                   file_start=0,
+                   filename_tmpl='{:06d}.jpg',
+                   start=0,
+                   max_num=0,
+                   show_progress=True):
         """Convert a video to frame images
 
         Args:
@@ -227,13 +237,15 @@ class VideoReader(object):
             cv2.imwrite(filename, img)
 
         if show_progress:
-            track_progress(write_frame, range(file_start, file_start + task_num))
+            track_progress(write_frame, range(file_start,
+                                              file_start + task_num))
         else:
             for i in range(task_num):
                 img = self.read()
                 if img is None:
                     break
-                filename = osp.join(frame_dir, filename_tmpl.format(i + file_start))
+                filename = osp.join(frame_dir,
+                                    filename_tmpl.format(i + file_start))
                 cv2.imwrite(filename, img)
 
     def __len__(self):
@@ -241,7 +253,10 @@ class VideoReader(object):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return [self.get_frame(i) for i in range(*index.indices(self.frame_cnt))]
+            return [
+                self.get_frame(i)
+                for i in range(*index.indices(self.frame_cnt))
+            ]
         # support negative indexing
         if index < 0:
             index += self.frame_cnt
@@ -298,7 +313,8 @@ def frames2video(frame_dir,
     img = cv2.imread(first_file)
     height, width = img.shape[:2]
     resolution = (width, height)
-    vwriter = cv2.VideoWriter(video_file, VideoWriter_fourcc(*fourcc), fps, resolution)
+    vwriter = cv2.VideoWriter(video_file, VideoWriter_fourcc(*fourcc), fps,
+                              resolution)
 
     def write_frame(file_idx):
         filename = osp.join(frame_dir, filename_tmpl.format(file_idx))
