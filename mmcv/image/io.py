@@ -14,13 +14,10 @@ else:
     from cv2 import CV_LOAD_IMAGE_GRAYSCALE as IMREAD_GRAYSCALE
     from cv2 import CV_LOAD_IMAGE_UNCHANGED as IMREAD_UNCHANGED
 
-imread_flags = {
-    'color': IMREAD_COLOR,
-    'grayscale': IMREAD_GRAYSCALE,
-    'unchanged': IMREAD_UNCHANGED
-}
+imread_flags = {'color': IMREAD_COLOR, 'grayscale': IMREAD_GRAYSCALE, 'unchanged': IMREAD_UNCHANGED}
 
 imread_backend = 'cv2'
+
 
 def usebackend(backend):
     """Select a backend for imread
@@ -49,23 +46,22 @@ def imread(img_or_path, flag='color'):
     if isinstance(img_or_path, np.ndarray):
         return img_or_path
     elif is_str(img_or_path):
-        if imread_backend == 'turbojpeg'
+        if imread_backend == 'turbojpeg':
             from turbojpeg import TJCS_RGB, TJPF_BGR, TJPF_GRAY, TurboJPEG
             jpeg = TurboJPEG()
             turbo_pixel_format = {'color': TJCS_RGB, 'grayscale': TJPF_GRAY}
 
-            if flag == 'color' or flag == 'grayscale'
+            if flag == 'color' or flag == 'grayscale':
                 pixel_format = turbo_pixel_format[flag]
                 check_file_exist(img_or_path, 'img file does not exist: {}'.format(img_or_path))
                 with open(img_or_path, 'rb') as in_file:
                     img = jpeg.decode(in_file.read(), pixel_format)
                 return img
-            else
+            else:
                 raise ValueError("flag must be 'color' or 'grayscale'")
-        else
+        else:
             flag = imread_flags[flag] if is_str(flag) else flag
-            check_file_exist(img_or_path,
-                         'img file does not exist: {}'.format(img_or_path))
+            check_file_exist(img_or_path, 'img file does not exist: {}'.format(img_or_path))
             return cv2.imread(img_or_path, flag)
     else:
         raise TypeError('"img" must be a numpy array or a filename')

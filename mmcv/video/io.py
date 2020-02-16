@@ -295,7 +295,7 @@ def frames2video(frame_dir,
         end = len([name for name in scandir(frame_dir, ext)])
     first_file = osp.join(frame_dir, filename_tmpl.format(start))
     check_file_exist(first_file, 'The start frame not found: ' + first_file)
-    img = cv2.imread(filename)
+    img = cv2.imread(first_file)
     height, width = img.shape[:2]
     resolution = (width, height)
     vwriter = cv2.VideoWriter(video_file, VideoWriter_fourcc(*fourcc), fps, resolution)
