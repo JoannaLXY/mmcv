@@ -23,6 +23,7 @@ else:
 
 
 class Cache(object):
+
     def __init__(self, capacity):
         self._cache = OrderedDict()
         self._capacity = int(capacity)
@@ -70,6 +71,7 @@ class VideoReader(object):
     >>>     mmcv.imshow(img)
     >>> v[5]  # get the 6th frame
     """
+
     def __init__(self, filename, cache_capacity=10):
         check_file_exist(filename, 'Video file not found: ' + filename)
         self._vcap = cv2.VideoCapture(filename)
